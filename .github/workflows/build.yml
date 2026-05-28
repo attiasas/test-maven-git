@@ -36,13 +36,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
-
-      - name: Set up Maven
-        uses: actions/setup-maven@v4
-        with:
-          maven-version: '3.11.1'
-          cache: 'maven'
-
       - name: Build
         run: mvn clean package -DskipTests
 
