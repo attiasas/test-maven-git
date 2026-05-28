@@ -1,0 +1,54 @@
+name: Build and Scan
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: The branch to build and scan
+        required: true
+        default: main
+      commit:
+        description: The commit to build and scan
+        required: true
+        default: HEAD
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_VERSION: ${{ github.run_number }}-${{ github.run_attempt }}-${{ github.sha }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install Jfrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ vars.JF_URK }}
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Set up Maven
+        uses: actions/setup-maven@v4
+        with:
+          maven-version: '3.11.1'
+          cache: 'maven'
+
+      - name: Build
+        run: mvn clean package -DskipTests
+
+      - name: Prepare versioned artifact
+        run: cp target/vulnapp-1.0.0.jar target/vulnapp-${BUILD_VERSION}.jar
+
+      - name: Upload to JFrog
+        run: jf rt upload target/vulnapp-${BUILD_VERSION}.jar test-maven-git/
+        
