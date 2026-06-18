@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.14.1</version>
+            <version>2.25.4.redhat-00002</version>
         </dependency>
         <!-- CVE-2017-7525, CVE-2018-14718, CVE-2019-12384 (High) -->
         <dependency>
